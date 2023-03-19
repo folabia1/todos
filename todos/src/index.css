@@ -67,3 +67,34 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* CSS Reset */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark light;
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+body {
+  min-height: 100vh;
+}
+
+input,
+textarea,
+button,
+select {
+  font: inherit;
+}
