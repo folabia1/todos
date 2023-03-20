@@ -68,6 +68,10 @@ button:focus-visible {
   }
 }
 
+#root {
+  width: 100%;
+}
+
 /* CSS Reset */
 
 *,
