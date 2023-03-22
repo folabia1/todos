@@ -23,8 +23,7 @@ const MainContainer = styled.div`
 
 export default () => {
   const [isCreatingTodo, setIsCreatingTodo] = useState(false);
-  const [createTodo] = api.endpoints.createTodoItem.useMutation();
-  const { data: todoItems, isLoading, refetch } = api.endpoints.getTodoItems.useQuery({});
+  const { data: todoItems, isLoading } = api.endpoints.getTodoItems.useQuery({});
   const allCompleted = todoItems?.data.every((todoItem) => todoItem.completed);
 
   return (
