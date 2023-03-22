@@ -6,7 +6,7 @@ import { StyledTodoItem } from "./TodoItem";
 export default ({ onComplete }: { onComplete: () => void }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [titleText, setTitleText] = useState("");
-  const [triggerRefetchTodos] = api.endpoints.getTodoItems.useLazyQuery();
+  const [triggerRefetchTodos, { isFetching: isFetchingTodos }] = api.endpoints.getTodoItems.useLazyQuery();
   const [createTodo, { isLoading: isCreatingTodo }] = api.endpoints.createTodoItem.useMutation();
 
   const onFinishedTyping = () => {
@@ -14,8 +14,11 @@ export default ({ onComplete }: { onComplete: () => void }) => {
       createTodo({ title: titleText })
         .unwrap()
         .finally(() => {
-          triggerRefetchTodos({});
-          onComplete();
+          triggerRefetchTodos({})
+            .unwrap()
+            .finally(() => {
+              onComplete();
+            });
         });
     } else {
       onComplete();
@@ -37,7 +40,7 @@ export default ({ onComplete }: { onComplete: () => void }) => {
           onChange={(e) => {
             setTitleText(e.target.value);
           }}
-          disabled={isCreatingTodo}
+          disabled={isCreatingTodo || isFetchingTodos}
           onBlur={() => {
             onFinishedTyping();
           }}
