@@ -15,5 +15,5 @@ model TodoItem {
   title         String  
   description   String?
   dueDate       Int?
-  completeted   Boolean @default(false)
+  completed   Boolean @default(false)
 }

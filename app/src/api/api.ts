@@ -1,15 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type {
-  TodoItem,
-  TodoItemAtCreation,
-  TodoItemAtUpdate,
-} from "../logic/types";
+import type { TodoItem, TodoItemAtCreation, TodoItemAtUpdate } from "../logic/types";
 import { RootState } from "../redux/store";
 
 // * Define endpoints
 // Usage example
 // import { api } from 'path/to/this/file/api'
-// const [getMySettingsQuery] = api.endpoints.getMySettings.useQuery();
+// const [getMySettingsQuery] = api.endpoints.getTodoItems.useQuery();
 // const [loginMutation] = api.endpoints.login.useMutation();
 
 // use consistent naming for request methods (where relevant)
@@ -21,8 +17,8 @@ import { RootState } from "../redux/store";
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://localhost:5001/",
-    prepareHeaders: (headers, { getState }) => {
+    baseUrl: "http://localhost:5001/",
+    prepareHeaders: (headers, { type, getState }) => {
       // By default, if we have a token in the store, let's use that for authenticated requests
       const token = (getState() as RootState).global.auth.token;
       if (token) {
@@ -33,31 +29,32 @@ export const api = createApi({
   }),
   endpoints: (builder) => ({
     // for todos
-    getTodoItems: builder.query<[TodoItem], { ids: [number] }>({
+    getTodoItems: builder.query<{ data: TodoItem[] }, { ids?: [number] }>({
       query: ({ ids }) => ({
         url: `todos`,
         params: { ids },
       }),
     }),
-    updateTodoItem: builder.mutation<TodoItem, TodoItemAtUpdate>({
-      query: ({ id }) => ({
-        url: `todos`,
-        method: "PUT",
-        body: { id },
-      }),
-    }),
-    createTodoItem: builder.mutation<TodoItem, TodoItemAtCreation>({
-      query: (todoItem) => ({
+    createTodoItem: builder.mutation<{ data: TodoItem; message: String }, TodoItemAtCreation>({
+      query: (newTodoItem) => ({
         url: `todos`,
         method: "POST",
-        body: todoItem,
+        body: newTodoItem,
       }),
     }),
-    deleteTodoItem: builder.mutation<void, { id: number }>({
+    updateTodoItem: builder.mutation<{ data: TodoItem; message: String }, TodoItemAtUpdate>({
+      query: ({ id, ...changes }) => {
+        return {
+          url: `todos/${id}`,
+          method: "PUT",
+          body: changes,
+        };
+      },
+    }),
+    deleteTodoItem: builder.mutation<{ message: String }, { id: number }>({
       query: ({ id }) => ({
-        url: `todos`,
+        url: `todos/${id}`,
         method: "DELETE",
-        body: { id },
       }),
     }),
   }),

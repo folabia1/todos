@@ -7,7 +7,6 @@ export interface TodoItem {
 }
 
 export interface TodoItemAtCreation {
-  id: number;
   title: string;
   description?: string;
   dueDate?: number;
