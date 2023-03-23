@@ -24,14 +24,9 @@ const MainContainer = styled.div`
 export default () => {
   const [isCreatingTodo, setIsCreatingTodo] = useState(false);
   const { data: todoItems, isLoading, refetch } = api.endpoints.getTodoItems.useQuery({});
-  const [updateTodo, { isLoading: isUpdatingTodo }] = api.endpoints.updateTodoItem.useMutation({});
+  const [toggleCompletedForTodoItems] = api.endpoints.toggleCompletedForTodoItems.useMutation({});
   const allCompleted = todoItems?.data.every((todoItem) => todoItem.completed);
 
-  const markAllTodoItemsAsCompleted = () => {
-    Promise.all(todoItems?.data.map(async ({ id }) => await updateTodo({ id, completed: !allCompleted }).unwrap())).finally(() => {
-      refetch();
-    });
-  };
   return (
     <MainContainer>
       <h1>Todo Items</h1>
@@ -55,9 +50,12 @@ export default () => {
       {todoItems && todoItems.data.length > 1 && (
         <button
           onClick={() => {
-            markAllTodoItemsAsCompleted();
+            toggleCompletedForTodoItems({ ids: todoItems.data.map((todoItem) => todoItem.id), completed: !allCompleted })
+              .unwrap()
+              .finally(() => {
+                refetch();
+              });
           }}
-          // disabled
         >
           {allCompleted ? "Deselect All" : "Select All"}
         </button>

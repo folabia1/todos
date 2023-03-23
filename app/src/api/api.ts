@@ -51,6 +51,15 @@ export const api = createApi({
         };
       },
     }),
+    toggleCompletedForTodoItems: builder.mutation<{ data: TodoItem; message: String }, { ids: number[]; completed: boolean }>({
+      query: ({ ids, completed }) => {
+        return {
+          url: `todos/completed`,
+          method: "PUT",
+          body: { ids, completed },
+        };
+      },
+    }),
     deleteTodoItem: builder.mutation<{ message: String }, { id: number }>({
       query: ({ id }) => ({
         url: `todos/${id}`,

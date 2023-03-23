@@ -32,7 +32,7 @@ async function main() {
       }
 
       try {
-        const idsArray = req.query.ids.split(",");
+        const idsArray: string[] = req.query.ids.split(",");
         const trimmedIdsArray = idsArray.map((id) => parseInt(id.trim()));
         const todoItems = await prisma.todoItem.findMany({
           where: { id: { in: trimmedIdsArray } },
@@ -90,6 +90,31 @@ async function main() {
       });
     } catch (error) {
       res.status(400).json({ error: "Unable to update the given fields of the todoItem" });
+    }
+  });
+
+  app.put("/todos/completed", async (req, res) => {
+    const { ids, completed } = req.body;
+    if (!Array.isArray(ids) || !ids.every((id) => Number.isInteger(id))) {
+      return res.status(400).json({ error: `Field "id" must be an integer for each todoItem` });
+    }
+
+    if (completed === undefined) {
+      return res.status(400).json({ error: `Field "completed" must be defined` });
+    }
+
+    try {
+      const updatedTodoItems = await prisma.todoItem.updateMany({
+        where: { id: { in: ids } },
+        data: { completed },
+      });
+
+      res.status(200).json({
+        data: updatedTodoItems,
+        message: ids.length === 1 ? " 1 todoItem was updated" : `${ids.length} todoItems were updated`,
+      });
+    } catch (error) {
+      res.status(400).json({ error: "Unable to update todoItems" });
     }
   });
 
