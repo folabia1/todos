@@ -43,11 +43,11 @@ export const api = createApi({
       }),
     }),
     updateTodoItem: builder.mutation<{ data: TodoItem; message: String }, TodoItemAtUpdate>({
-      query: ({ id, ...changes }) => {
+      query: (todoItemToUpdate) => {
         return {
-          url: `todos/${id}`,
+          url: `todos`,
           method: "PUT",
-          body: changes,
+          body: todoItemToUpdate,
         };
       },
     }),

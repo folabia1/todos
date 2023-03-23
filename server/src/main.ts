@@ -64,8 +64,8 @@ async function main() {
     }
   });
 
-  app.put("/todos/:id", async (req, res) => {
-    const id = parseInt(req.params.id);
+  app.put("/todos", async (req, res) => {
+    const { id, ...changes } = req.body;
     if (!Number.isInteger(id)) {
       return res.status(400).json({ error: `Field "id" must be an integer` });
     }
@@ -76,7 +76,7 @@ async function main() {
     try {
       const updatedTodo = await prisma.todoItem.update({
         where: { id: id },
-        data: req.body,
+        data: changes,
       });
       const updatedFields: String[] = [];
       Object.keys(updatedTodo).forEach((field) => {
